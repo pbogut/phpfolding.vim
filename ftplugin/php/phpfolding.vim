@@ -621,7 +621,16 @@ function! PHPFoldText() " {{{
 	endif
 
 	" Return the foldtext
-	return "+--".lines." lines: " . lineString
+	
+	" Change display style - quick dirty one
+	let lines_count = v:foldend - v:foldstart + 1
+	let lines_count_text = '| ' . printf("%10s", lines_count . ' lines') . ' |'
+	" let foldchar = matchstr(&fillchars, 'fold:\zs.')
+	let foldchar = ' ' " use the space
+	let foldtextstart = strpart('+ ' . repeat(foldchar, v:foldlevel*2) . lineString, 0, (winwidth(0)*2)/3)
+	let foldtextend = lines_count_text . repeat(foldchar, 8)
+	let foldtextlength = strlen(substitute(foldtextstart . foldtextend, '.', 'x', 'g')) + &foldcolumn
+	return foldtextstart  . repeat(foldchar, winwidth(0)-foldtextlength) . foldtextend
 endfunction
 " }}}
 function! SkipMatch() " {{{
